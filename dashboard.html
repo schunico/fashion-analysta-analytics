@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fashion Analysta Analytics — Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif; background: #f7f7f5; color: #111; min-height: 100vh; }
+
+    /* NAV */
+    nav { background: #fff; border-bottom: 1px solid #e8e8e4; padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; }
+    .nav-brand span { color: #888; font-weight: 400; }
+    .nav-user { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #555; }
+    .nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 600; }
+
+    /* LOGIN STATE */
+    .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 56px); gap: 16px; padding: 40px; }
+    .login-screen h1 { font-size: 1.4rem; font-weight: 600; }
+    .login-screen p { color: #666; font-size: 0.9rem; max-width: 340px; text-align: center; line-height: 1.6; }
+    .btn-tiktok { display: flex; align-items: center; gap: 10px; background: #111; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-tiktok:hover { background: #333; }
+    .btn-tiktok svg { width: 18px; height: 18px; fill: #fff; }
+
+    /* DASHBOARD */
+    .dashboard { display: none; padding: 32px; max-width: 1100px; margin: 0 auto; }
+    .dashboard.visible { display: block; }
+    .page-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 24px; }
+    .page-title span { color: #888; font-weight: 400; font-size: 0.95rem; margin-left: 8px; }
+
+    /* SUMMARY CARDS */
+    .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .card { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; padding: 20px 24px; }
+    .card-label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .card-value { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.02em; }
+    .card-delta { font-size: 0.8rem; margin-top: 4px; }
+    .card-delta.up { color: #2d9e5f; }
+    .card-delta.down { color: #c0392b; }
+
+    /* VIDEO TABLE */
+    .section-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 14px; color: #333; }
+    .table-wrap { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; overflow: hidden; margin-bottom: 32px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead th { text-align: left; padding: 12px 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; border-bottom: 1px solid #e8e8e4; background: #fafaf8; font-weight: 500; }
+    tbody td { padding: 14px 20px; border-bottom: 1px solid #f0f0ec; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #fafaf8; }
+    .video-title { font-weight: 500; color: #111; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .video-date { color: #888; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+    .badge-green { background: #e8f5ee; color: #2d9e5f; }
+    .badge-grey { background: #f0f0ec; color: #666; }
+
+    /* CHART PLACEHOLDER */
+    .chart-area { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; padding: 24px; margin-bottom: 32px; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 16px; }
+    .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar { width: 100%; background: #111; border-radius: 4px 4px 0 0; transition: background 0.15s; }
+    .bar:hover { background: #444; }
+    .bar-label { font-size: 0.7rem; color: #aaa; }
+
+    @media (max-width: 700px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .dashboard { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Fashion Analysta <span>Analytics</span></div>
+  <div class="nav-user" id="nav-user" style="display:none">
+    <div class="nav-avatar">FA</div>
+    @fashion.analysta
+  </div>
+</nav>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <h1>Your TikTok analytics, all in one place.</h1>
+  <p>Connect your TikTok account to view video performance, watch time, audience insights, and traffic sources across all your posts.</p>
+  <button class="btn-tiktok" onclick="showDashboard()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+    Connect with TikTok
+  </button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="page-title">Overview <span>@fashion.analysta · Last 30 days</span></div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Total Views</div>
+      <div class="card-value">14,820</div>
+      <div class="card-delta up">↑ 12% vs prev. period</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Avg. Watch Time</div>
+      <div class="card-value">3.1s</div>
+      <div class="card-delta up">↑ 0.9s vs prev. period</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total Likes</div>
+      <div class="card-value">284</div>
+      <div class="card-delta down">↓ 4% vs prev. period</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Full View Rate</div>
+      <div class="card-value">3.6%</div>
+      <div class="card-delta up">↑ 1.7% vs prev. period</div>
+    </div>
+  </div>
+
+  <div class="chart-area">
+    <div class="section-title">Views by video (last 8 posts)</div>
+    <div class="chart-bars" id="chart-bars"></div>
+  </div>
+
+  <div class="section-title">All videos</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Video</th>
+          <th>Posted</th>
+          <th>Views</th>
+          <th>Avg. Watch</th>
+          <th>Likes</th>
+          <th>Full View %</th>
+          <th>Top Source</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="video-title">5 things I'm obsessed with for August</td>
+          <td class="video-date">Aug 6, 2026</td>
+          <td>131</td>
+          <td>3.3s</td>
+          <td>1</td>
+          <td>3.62%</td>
+          <td>For You (93.5%)</td>
+          <td><span class="badge badge-grey">Growing</span></td>
+        </tr>
+        <tr>
+          <td class="video-title">Anti-capsule wardrobe — Day 4</td>
+          <td class="video-date">Jul 22, 2026</td>
+          <td>2,140</td>
+          <td>4.1s</td>
+          <td>38</td>
+          <td>5.2%</td>
+          <td>For You (88%)</td>
+          <td><span class="badge badge-green">Strong</span></td>
+        </tr>
+        <tr>
+          <td class="video-title">Anti-capsule wardrobe — Day 3</td>
+          <td class="video-date">Jul 21, 2026</td>
+          <td>1,870</td>
+          <td>3.8s</td>
+          <td>29</td>
+          <td>4.8%</td>
+          <td>For You (91%)</td>
+          <td><span class="badge badge-green">Strong</span></td>
+        </tr>
+        <tr>
+          <td class="video-title">Anti-capsule wardrobe — Day 2</td>
+          <td class="video-date">Jul 20, 2026</td>
+          <td>1,540</td>
+          <td>3.5s</td>
+          <td>22</td>
+          <td>4.1%</td>
+          <td>For You (89%)</td>
+          <td><span class="badge badge-green">Strong</span></td>
+        </tr>
+        <tr>
+          <td class="video-title">Anti-capsule wardrobe — Day 1</td>
+          <td class="video-date">Jul 19, 2026</td>
+          <td>1,210</td>
+          <td>3.2s</td>
+          <td>18</td>
+          <td>3.9%</td>
+          <td>For You (87%)</td>
+          <td><span class="badge badge-green">Strong</span></td>
+        </tr>
+        <tr>
+          <td class="video-title">5 things I'm obsessed with for October</td>
+          <td class="video-date">Oct 3, 2025</td>
+          <td>4,820</td>
+          <td>2.2s</td>
+          <td>47</td>
+          <td>1.89%</td>
+          <td>Search (28.6%)</td>
+          <td><span class="badge badge-green">Compounding</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function showDashboard() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('visible');
+    document.getElementById('nav-user').style.display = 'flex';
+    renderChart();
+  }
+
+  function renderChart() {
+    const data = [4820, 1210, 1540, 1870, 2140, 131, 0, 0];
+    const labels = ['Oct', 'D1', 'D2', 'D3', 'D4', 'Aug', '', ''];
+    const max = Math.max(...data);
+    const container = document.getElementById('chart-bars');
+    container.innerHTML = '';
+    data.forEach((val, i) => {
+      if (val === 0) return;
+      const pct = (val / max) * 100;
+      const wrap = document.createElement('div');
+      wrap.className = 'bar-wrap';
+      wrap.innerHTML = `<div class="bar" style="height:${pct}%" title="${val.toLocaleString()} views"></div><div class="bar-label">${labels[i]}</div>`;
+      container.appendChild(wrap);
+    });
+  }
+</script>
+
+</body>
+</html>
