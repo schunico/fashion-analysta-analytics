@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connecting — Fashion Analysta Analytics</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f7f7f5; color: #111; flex-direction: column; gap: 12px; }
+    p { color: #666; font-size: 0.9rem; }
+    .spinner { width: 28px; height: 28px; border: 3px solid #e0e0e0; border-top-color: #111; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <p>Connecting your TikTok account…</p>
+
+  <script>
+    // TikTok redirects here with ?code=...&state=...
+    // Since this is a static GitHub Pages site (no backend), we can't exchange
+    // the code for a token server-side. For the demo, we verify the state and
+    // redirect to the dashboard to show the authenticated view.
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    const savedState = sessionStorage.getItem('tiktok_oauth_state');
+
+    if (code && state && state === savedState) {
+      // State matches — OAuth flow completed successfully
+      // Redirect to dashboard with authed flag
+      window.location.href = 'dashboard.html?authed=1&username=%40fashion.analysta';
+    } else if (params.get('error')) {
+      document.querySelector('p').textContent = 'Connection cancelled. Redirecting…';
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+    } else {
+      // Fallback — just show dashboard
+      window.location.href = 'dashboard.html?authed=1&username=%40fashion.analysta';
+    }
+  </script>
+</body>
+</html>

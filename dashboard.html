@@ -8,28 +8,24 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif; background: #f7f7f5; color: #111; min-height: 100vh; }
 
-    /* NAV */
     nav { background: #fff; border-bottom: 1px solid #e8e8e4; padding: 0 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
     .nav-brand { font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; }
     .nav-brand span { color: #888; font-weight: 400; }
     .nav-user { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #555; }
     .nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: #111; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 600; }
 
-    /* LOGIN STATE */
     .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 56px); gap: 16px; padding: 40px; }
     .login-screen h1 { font-size: 1.4rem; font-weight: 600; }
     .login-screen p { color: #666; font-size: 0.9rem; max-width: 340px; text-align: center; line-height: 1.6; }
-    .btn-tiktok { display: flex; align-items: center; gap: 10px; background: #111; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-tiktok { display: flex; align-items: center; gap: 10px; background: #111; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: background 0.15s; }
     .btn-tiktok:hover { background: #333; }
     .btn-tiktok svg { width: 18px; height: 18px; fill: #fff; }
 
-    /* DASHBOARD */
     .dashboard { display: none; padding: 32px; max-width: 1100px; margin: 0 auto; }
     .dashboard.visible { display: block; }
     .page-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 24px; }
     .page-title span { color: #888; font-weight: 400; font-size: 0.95rem; margin-left: 8px; }
 
-    /* SUMMARY CARDS */
     .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
     .card { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; padding: 20px 24px; }
     .card-label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
@@ -38,7 +34,6 @@
     .card-delta.up { color: #2d9e5f; }
     .card-delta.down { color: #c0392b; }
 
-    /* VIDEO TABLE */
     .section-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 14px; color: #333; }
     .table-wrap { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; overflow: hidden; margin-bottom: 32px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -52,12 +47,10 @@
     .badge-green { background: #e8f5ee; color: #2d9e5f; }
     .badge-grey { background: #f0f0ec; color: #666; }
 
-    /* CHART PLACEHOLDER */
     .chart-area { background: #fff; border: 1px solid #e8e8e4; border-radius: 10px; padding: 24px; margin-bottom: 32px; }
     .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 16px; }
     .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .bar { width: 100%; background: #111; border-radius: 4px 4px 0 0; transition: background 0.15s; }
-    .bar:hover { background: #444; }
+    .bar { width: 100%; background: #111; border-radius: 4px 4px 0 0; }
     .bar-label { font-size: 0.7rem; color: #aaa; }
 
     @media (max-width: 700px) {
@@ -72,7 +65,7 @@
   <div class="nav-brand">Fashion Analysta <span>Analytics</span></div>
   <div class="nav-user" id="nav-user" style="display:none">
     <div class="nav-avatar">FA</div>
-    @fashion.analysta
+    <span id="nav-username">@fashion.analysta</span>
   </div>
 </nav>
 
@@ -80,15 +73,15 @@
 <div class="login-screen" id="login-screen">
   <h1>Your TikTok analytics, all in one place.</h1>
   <p>Connect your TikTok account to view video performance, watch time, audience insights, and traffic sources across all your posts.</p>
-  <button class="btn-tiktok" onclick="showDashboard()">
+  <a class="btn-tiktok" id="tiktok-login-btn" href="#">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
     Connect with TikTok
-  </button>
+  </a>
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD (shown after OAuth callback) -->
 <div class="dashboard" id="dashboard">
-  <div class="page-title">Overview <span>@fashion.analysta · Last 30 days</span></div>
+  <div class="page-title">Overview <span id="account-label">@fashion.analysta · Last 30 days</span></div>
 
   <div class="cards">
     <div class="card">
@@ -114,7 +107,7 @@
   </div>
 
   <div class="chart-area">
-    <div class="section-title">Views by video (last 8 posts)</div>
+    <div class="section-title">Views by video (last posts)</div>
     <div class="chart-bars" id="chart-bars"></div>
   </div>
 
@@ -200,21 +193,44 @@
 </div>
 
 <script>
-  function showDashboard() {
+  const CLIENT_KEY = 'sbawersgovs4lglsrl';
+  const REDIRECT_URI = 'https://schunico.github.io/fashion-analysta-analytics/callback.html';
+  const SCOPES = 'user.info.basic,user.info.profile,user.info.stats,video.list';
+
+  function generateState() {
+    return Math.random().toString(36).substring(2, 15);
+  }
+
+  // Build the TikTok OAuth URL and set it on the button
+  const state = generateState();
+  sessionStorage.setItem('tiktok_oauth_state', state);
+  const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${SCOPES}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
+  document.getElementById('tiktok-login-btn').href = authUrl;
+
+  // If returning from OAuth callback with a success flag, show dashboard
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('authed') === '1') {
+    showDashboard(params.get('username') || '@fashion.analysta');
+  }
+
+  function showDashboard(username) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').classList.add('visible');
     document.getElementById('nav-user').style.display = 'flex';
+    if (username) {
+      document.getElementById('nav-username').textContent = username;
+      document.getElementById('account-label').textContent = username + ' · Last 30 days';
+    }
     renderChart();
   }
 
   function renderChart() {
-    const data = [4820, 1210, 1540, 1870, 2140, 131, 0, 0];
-    const labels = ['Oct', 'D1', 'D2', 'D3', 'D4', 'Aug', '', ''];
+    const data = [4820, 1210, 1540, 1870, 2140, 131];
+    const labels = ['Oct', 'D1', 'D2', 'D3', 'D4', 'Aug'];
     const max = Math.max(...data);
     const container = document.getElementById('chart-bars');
     container.innerHTML = '';
     data.forEach((val, i) => {
-      if (val === 0) return;
       const pct = (val / max) * 100;
       const wrap = document.createElement('div');
       wrap.className = 'bar-wrap';
